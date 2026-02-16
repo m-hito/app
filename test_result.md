@@ -141,11 +141,14 @@ backend:
     file: "app/api/[[...path]]/route.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Returns system by slug, 404 for non-existent slugs"
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: All individual system endpoints working correctly. /api/systems/movement-system, /api/systems/npc-factory, /api/systems/combat-system return proper data with all fields. /api/systems/nonexistent-system correctly returns 404 with error message."
 
   - task: "CORS and OPTIONS handling"
     implemented: true
