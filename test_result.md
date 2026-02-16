@@ -126,11 +126,14 @@ backend:
     file: "app/api/[[...path]]/route.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Returns all 3 systems with full data"
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Returns all 3 systems (movement-system, npc-factory, combat-system) with all required fields: slug, title, displayName, description, gradientFrom, gradientTo, icon, devNotes, repoUrl, ytVideo, waitTimeSeconds, tags, brawlNotes, featured. CORS headers included."
 
   - task: "GET /api/systems/:slug - Return single system"
     implemented: true
