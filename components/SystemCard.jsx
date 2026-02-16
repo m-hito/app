@@ -8,16 +8,28 @@ export default function SystemCard({ system, index }) {
       className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-900/60 backdrop-blur-sm transition-all duration-300 hover:-translate-y-2 hover:border-purple-500/40 hover:shadow-lg hover:shadow-purple-500/10"
     >
       {/* Gradient thumbnail */}
-      <div
-        className="flex h-40 items-center justify-center"
-        style={{
-          background: `linear-gradient(135deg, ${system.gradientFrom}, ${system.gradientTo})`,
-        }}
-      >
-        <span className="text-6xl drop-shadow-lg transition-transform duration-300 group-hover:scale-110">
-          {system.icon}
-        </span>
-      </div>
+      {system.thumbnail ? (
+  <img
+    src={system.thumbnail}
+    alt={system.displayName}
+    className="h-40 w-full rounded-t-2xl object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+    // onError={(e) => {
+    //   e.target.style.display = 'none'; // Hide broken image
+    // }}
+  />
+) : (
+  <div
+    className="flex h-40 items-center justify-center"
+    style={{
+      background: `linear-gradient(135deg, ${system.gradientFrom}, ${system.gradientTo})`,
+    }}
+  >
+    <span className="text-6xl drop-shadow-lg transition-transform duration-300 group-hover:scale-110">
+      {system.icon}
+    </span>
+  </div>
+)}
+
 
       {/* Content */}
       <div className="flex flex-1 flex-col p-5">

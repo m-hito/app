@@ -55,45 +55,44 @@ export default function SystemDetailPage() {
           <span>All Systems</span>
         </Link>
       </div>
+{/* Hero Section */}
+<section className="mb-8">
+  {/* Thumbnail or Gradient */}
+  {system.thumbnail ? (
+    <div className="relative h-64 overflow-hidden rounded-3xl md:h-80">
+      <img
+        src={system.thumbnail}
+        alt={system.title}
+        className="h-full w-full object-cover"
+      />
 
-      {/* Hero Section */}
-      <section className="mb-8">
-        <div
-          className="relative flex h-64 items-center justify-center overflow-hidden rounded-3xl md:h-80"
-          style={{
-            background: `linear-gradient(135deg, ${system.gradientFrom}, ${system.gradientTo})`,
-          }}
-        >
-          {/* Decorative elements */}
-          <div className="absolute inset-0 bg-black/10" />
-          <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
-          <span className="relative text-[100px] drop-shadow-2xl md:text-[120px]">
-            {system.icon}
-          </span>
-        </div>
-
-        {/* Title & description */}
-        <div className="mt-8">
-          <div className="mb-3 flex flex-wrap gap-1.5">
-            {(system.tags || []).map((tag) => (
-              <Badge
-                key={tag}
-                variant="secondary"
-                className="bg-purple-500/10 text-purple-300 border border-purple-500/20 text-xs"
-              >
-                {tag}
-              </Badge>
-            ))}
-          </div>
-          <h1 className="mb-4 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
-            {system.title}
-          </h1>
-          <p className="text-lg leading-relaxed text-slate-300 md:text-xl">
-            {system.description}
-          </p>
-        </div>
-      </section>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+    </div>
+  ) : (
+    <div className="relative flex h-64 items-center justify-center overflow-hidden rounded-3xl md:h-80"
+         style={{ background: `linear-gradient(135deg, ${system.gradientFrom}, ${system.gradientTo})` }}>
+      {/* decorative elements... */}
+      <span className="relative text-[100px] drop-shadow-2xl md:text-[120px]">{system.icon}</span>
+    </div>
+  )}
+  
+  {/* Title & description - NOW CORRECTLY INSIDE */}
+  <div className="mt-8">
+    <div className="mb-3 flex flex-wrap gap-1.5">
+      {(system.tags || []).map((tag) => (
+        <Badge key={tag} variant="secondary" className="bg-purple-500/10 text-purple-300 border border-purple-500/20 text-xs">
+          {tag}
+        </Badge>
+      ))}
+    </div>
+    <h1 className="mb-4 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
+      {system.title}
+    </h1>
+    <p className="text-lg leading-relaxed text-slate-300 md:text-xl">
+      {system.description}
+    </p>
+  </div>
+</section> {/* ← THIS CLOSES IT */}
 
       {/* Developer Notes */}
       <section className="mb-8">
