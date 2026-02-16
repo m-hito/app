@@ -1,104 +1,68 @@
-import { MongoClient } from 'mongodb'
-import { v4 as uuidv4 } from 'uuid'
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
+import { systems, getSystemBySlug } from '@/lib/systems';
 
-// MongoDB connection
-let client
-let db
-
-async function connectToMongo() {
-  if (!client) {
-    client = new MongoClient(process.env.MONGO_URL)
-    await client.connect()
-    db = client.db(process.env.DB_NAME)
-  }
-  return db
+// Utility: CORS headers
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': process.env.CORS_ORIGINS || '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  };
 }
 
-// Helper function to handle CORS
-function handleCORS(response) {
-  response.headers.set('Access-Control-Allow-Origin', process.env.CORS_ORIGINS || '*')
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  response.headers.set('Access-Control-Allow-Credentials', 'true')
-  return response
-}
-
-// OPTIONS handler for CORS
+// OPTIONS handler for CORS preflight
 export async function OPTIONS() {
-  return handleCORS(new NextResponse(null, { status: 200 }))
+  return new NextResponse(null, { status: 204, headers: corsHeaders() });
 }
 
-// Route handler function
-async function handleRoute(request, { params }) {
-  const { path = [] } = params
-  const route = `/${path.join('/')}`
-  const method = request.method
-
+// GET handler
+export async function GET(request) {
   try {
-    const db = await connectToMongo()
+    const { pathname } = new URL(request.url);
+    const path = pathname.replace('/api', '');
 
-    // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
-    if (route === '/root' && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: "Hello World" }))
-    }
-    // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
-    if (route === '/' && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: "Hello World" }))
+    // GET /api/systems - Return all systems
+    if (path === '/systems' || path === '/systems/') {
+      return NextResponse.json(
+        { success: true, data: systems },
+        { headers: corsHeaders() }
+      );
     }
 
-    // Status endpoints - POST /api/status
-    if (route === '/status' && method === 'POST') {
-      const body = await request.json()
-      
-      if (!body.client_name) {
-        return handleCORS(NextResponse.json(
-          { error: "client_name is required" }, 
-          { status: 400 }
-        ))
+    // GET /api/systems/:slug - Return a single system
+    const systemMatch = path.match(/^\/systems\/([\w-]+)$/);
+    if (systemMatch) {
+      const slug = systemMatch[1];
+      const system = getSystemBySlug(slug);
+      if (!system) {
+        return NextResponse.json(
+          { success: false, error: 'System not found' },
+          { status: 404, headers: corsHeaders() }
+        );
       }
-
-      const statusObj = {
-        id: uuidv4(),
-        client_name: body.client_name,
-        timestamp: new Date()
-      }
-
-      await db.collection('status_checks').insertOne(statusObj)
-      return handleCORS(NextResponse.json(statusObj))
+      return NextResponse.json(
+        { success: true, data: system },
+        { headers: corsHeaders() }
+      );
     }
 
-    // Status endpoints - GET /api/status
-    if (route === '/status' && method === 'GET') {
-      const statusChecks = await db.collection('status_checks')
-        .find({})
-        .limit(1000)
-        .toArray()
-
-      // Remove MongoDB's _id field from response
-      const cleanedStatusChecks = statusChecks.map(({ _id, ...rest }) => rest)
-      
-      return handleCORS(NextResponse.json(cleanedStatusChecks))
+    // GET /api/health - Health check
+    if (path === '/health' || path === '/' || path === '') {
+      return NextResponse.json(
+        { success: true, message: 'Roblox Systems Hub API', version: '1.0.0' },
+        { headers: corsHeaders() }
+      );
     }
 
-    // Route not found
-    return handleCORS(NextResponse.json(
-      { error: `Route ${route} not found` }, 
-      { status: 404 }
-    ))
-
+    return NextResponse.json(
+      { success: false, error: 'Route not found' },
+      { status: 404, headers: corsHeaders() }
+    );
   } catch (error) {
-    console.error('API Error:', error)
-    return handleCORS(NextResponse.json(
-      { error: "Internal server error" }, 
-      { status: 500 }
-    ))
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      { status: 500, headers: corsHeaders() }
+    );
   }
 }
-
-// Export all HTTP methods
-export const GET = handleRoute
-export const POST = handleRoute
-export const PUT = handleRoute
-export const DELETE = handleRoute
-export const PATCH = handleRoute
