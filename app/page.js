@@ -27,25 +27,41 @@ export default function HomePage() {
         <Link
           href={`/systems/${featured.slug}`}
           className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-700/50 bg-slate-900/60 backdrop-blur-sm transition-all duration-300 hover:border-purple-500/40 hover:shadow-xl hover:shadow-purple-500/10 md:flex-row"
-        >
-          {/* Featured gradient */}
-          <div
-            className="flex min-h-[220px] items-center justify-center md:w-2/5"
-            style={{
-              background: `linear-gradient(135deg, ${featured.gradientFrom}, ${featured.gradientTo})`,
-            }}
           >
-            <div className="text-center">
-              <span className="text-8xl drop-shadow-lg transition-transform duration-300 group-hover:scale-110 inline-block">
-                {featured.icon}
-              </span>
-              <div className="mt-3">
+          {/* Featured thumbnail or gradient */}
+          {featured.thumbnail ? (
+            <div className="relative min-h-[220px] md:w-2/5 overflow-hidden">
+              <img
+                src={featured.thumbnail}
+                alt={featured.displayName}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <div className="absolute bottom-4 left-4">
                 <Badge className="bg-white/20 text-white border-white/30 text-xs">
                   ⭐ Featured
                 </Badge>
               </div>
             </div>
-          </div>
+          ) : (
+            <div
+              className="flex min-h-[220px] items-center justify-center md:w-2/5"
+              style={{
+                background: `linear-gradient(135deg, ${featured.gradientFrom}, ${featured.gradientTo})`,
+              }}
+            >
+              <div className="text-center">
+                <span className="text-8xl drop-shadow-lg transition-transform duration-300 group-hover:scale-110 inline-block">
+                  {featured.icon}
+                </span>
+                <div className="mt-3">
+                  <Badge className="bg-white/20 text-white border-white/30 text-xs">
+                    ⭐ Featured
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Featured info */}
           <div className="flex flex-1 flex-col justify-center p-8">
